@@ -1,0 +1,13 @@
+model_name: "bert-base-uncased"
+aspect_count: 
+
+training:
+  batch_size: 
+  lr: 
+  epochs: 
+  max_len: 
+
+paths:
+  train_file: "data/processed/absa_train.csv"
+  val_file: "data/processed/absa_val.csv"
+  save_dir: "models/checkpoints/"

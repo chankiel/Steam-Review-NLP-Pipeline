@@ -1,0 +1,5 @@
+model:
+  name: "bert-base-uncased"
+  aspect_count: 
+  hidden_size: 
+  head_hidden: 
