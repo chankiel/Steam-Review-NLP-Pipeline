@@ -1,0 +1,75 @@
+# PineconeManager.py
+import os
+from dotenv import load_dotenv
+from pinecone import Pinecone, ServerlessSpec
+from SentenceEmbedder import SentenceEmbedder
+
+load_dotenv()
+
+INDEX_NAME = os.getenv("INDEX_NAME")
+DIMENSION = int(os.getenv("DIMENSION"))
+API_KEY = os.getenv("PINECONE_API_KEY")
+ENV = os.getenv("PINECONE_ENV")
+
+class PineconeManager:
+    def __init__(self):
+        # Pinecone client
+        self.pc = Pinecone(api_key=API_KEY)
+        self.dimension = DIMENSION
+        self.index_name = INDEX_NAME
+
+        # create index if not exists
+        if self.index_name not in [i.name for i in self.pc.list_indexes()]:
+            self.pc.create_index(
+                name=self.index_name,
+                dimension=self.dimension,
+                metric="cosine",
+                spec=ServerlessSpec(cloud="aws", region=ENV)
+            )
+
+        self.index = self.pc.Index(self.index_name)
+
+        # initialize sentence embedder
+        self.embedder = SentenceEmbedder()
+
+    def upsert_text(self, id_, text, metadata=None):
+        vec = self.embedder.embed_sentence(text)
+        flat_meta = {}
+        if metadata:
+            for k, v in metadata.items():
+                if isinstance(v, dict):
+                    for subk, subv in v.items():
+                        if isinstance(subv, (str, int, float, bool)):
+                            flat_meta[f"{k}_{subk}"] = subv
+                        else:
+                            flat_meta[f"{k}_{subk}"] = str(subv)
+                else:
+                    flat_meta[k] = v
+        self.index.upsert(vectors=[{"id": id_, "values": vec.tolist(), "metadata": flat_meta}])
+
+    def query_text(self, text, top_k=5):
+        vec = self.embedder.embed_sentence(text)
+        res = self.index.query(vector=vec.tolist(), top_k=top_k, include_metadata=True)
+        return res['matches']
+
+
+# --- Main trial ---
+if __name__ == "__main__":
+    pm = PineconeManager()
+
+    # Trial embedding/upsert
+    sample_text = "I currently play league of legends and i love it"
+    sample_vec = pm.embedder.embed_sentence(sample_text)
+    print("Trial embedding vector shape:", sample_vec.shape)
+
+    pm.upsert_text("triaawdl", sample_text, metadata={"text": sample_text})
+    print("Trial upsert done.")
+
+    # Query test
+    results = pm.query_text("I LOVE league of legends")
+    for r in results:
+        print(r)
+
+    results = pm.query_text("I hate league of legends")
+    for r in results:
+        print(r)
