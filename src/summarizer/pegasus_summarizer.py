@@ -4,7 +4,7 @@ from typing import List
 import torch
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-from src.summarizer.base import BaseSummarizer
+from summarizer.base import BaseSummarizer
 
 
 class PegasusSummarizer(BaseSummarizer):
