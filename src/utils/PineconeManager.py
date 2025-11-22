@@ -32,44 +32,65 @@ class PineconeManager:
         # initialize sentence embedder
         self.embedder = SentenceEmbedder()
 
-    def upsert_text(self, id_, text, metadata=None):
-        vec = self.embedder.embed_sentence(text)
-        flat_meta = {}
-        if metadata:
-            for k, v in metadata.items():
-                if isinstance(v, dict):
-                    for subk, subv in v.items():
-                        if isinstance(subv, (str, int, float, bool)):
-                            flat_meta[f"{k}_{subk}"] = subv
-                        else:
-                            flat_meta[f"{k}_{subk}"] = str(subv)
-                else:
-                    flat_meta[k] = v
-        self.index.upsert(vectors=[{"id": id_, "values": vec.tolist(), "metadata": flat_meta}])
+    # --- New cleaner method ---
+    def upsert_review(self, id_, review_text, app_id, app_name):
+        vec = self.embedder.embed_sentence(review_text)
 
+        metadata = {
+            "app_id": app_id,
+            "app_name": app_name,
+            "review_text": review_text
+        }
+
+        self.index.upsert(vectors=[
+            {
+                "id": id_,
+                "values": vec.tolist(),
+                "metadata": metadata
+            }
+        ])
+
+    # --- Query ---
     def query_text(self, text, top_k=5):
         vec = self.embedder.embed_sentence(text)
-        res = self.index.query(vector=vec.tolist(), top_k=top_k, include_metadata=True)
-        return res['matches']
+        res = self.index.query(
+            vector=vec.tolist(),
+            top_k=top_k,
+            include_metadata=True
+        )
+        return res["matches"]
 
 
 # --- Main trial ---
-if __name__ == "__main__":
-    pm = PineconeManager()
+# if __name__ == "__main__":
+#     pm = PineconeManager()
 
-    # Trial embedding/upsert
-    sample_text = "I currently play league of legends and i love it"
-    sample_vec = pm.embedder.embed_sentence(sample_text)
-    print("Trial embedding vector shape:", sample_vec.shape)
+#     # Example review info
+#     review_id = "rev_001"
+#     app_id = "com.riot.league"
+#     app_name = "League of Legends"
+#     review_text = "I currently play league of legends and I love it"
 
-    pm.upsert_text("triaawdl", sample_text, metadata={"text": sample_text})
-    print("Trial upsert done.")
+#     # Trial embedding shape
+#     sample_vec = pm.embedder.embed_sentence(review_text)
+#     print("Trial embedding vector shape:", sample_vec.shape)
 
-    # Query test
-    results = pm.query_text("I LOVE league of legends")
-    for r in results:
-        print(r)
+#     # Upsert trial
+#     pm.upsert_review(
+#         id_=review_id,
+#         review_text=review_text,
+#         app_id=app_id,
+#         app_name=app_name
+#     )
+#     print("Trial upsert done.")
 
-    results = pm.query_text("I hate league of legends")
-    for r in results:
-        print(r)
+#     # Query test
+#     print("\nQuery: 'I LOVE league of legends'")
+#     results = pm.query_text("I LOVE league of legends")
+#     for r in results:
+#         print(r)
+
+#     print("\nQuery: 'I hate league of legends'")
+#     results = pm.query_text("I hate league of legends")
+#     for r in results:
+#         print(r)

@@ -13,3 +13,5 @@ tqdm
 pinecone
 psycopg2-binary
 python-dotenv 
+accelerate
+huggingface_hub
