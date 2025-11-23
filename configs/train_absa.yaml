@@ -1,13 +1,24 @@
-model_name: "bert-base-uncased"
-aspect_count: 
+model:
+  name: bert-base-uncased
+  max_len: 128
 
 training:
-  batch_size: 
-  lr: 
-  epochs: 
-  max_len: 
+  batch_size_train: 16
+  batch_size_valid: 16
+  epochs: 3
+  learning_rate: 2e-5
+
+aspects:
+  - gameplay
+  - graphics
+  - performance
+  - story
+  - controls
+  - audio
+  - price
+  - multiplayer
 
 paths:
-  train_file: "data/processed/absa_train.csv"
-  val_file: "data/processed/absa_val.csv"
-  save_dir: "models/checkpoints/"
+  train: ./data/processed/absa_train.csv
+  valid: ./data/valid.csv
+  output_dir: ./outputs
