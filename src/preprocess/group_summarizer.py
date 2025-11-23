@@ -12,7 +12,7 @@ def clean_text(text: str) -> str:
     return text.strip()
 
 
-def group_reviews(df, max_reviews_per_game=5):
+def group_reviews(df, max_reviews_per_game=20):
     df = df.copy()
     df["app_name"] = df["app_name"].fillna("Unknown")
 
