@@ -12,17 +12,18 @@ def clean_text(text: str) -> str:
     return text.strip()
 
 
-def group_reviews(df: pd.DataFrame) -> pd.DataFrame:
+def group_reviews(df, max_reviews_per_game=20):
     df = df.copy()
     df["app_name"] = df["app_name"].fillna("Unknown")
-    df["review_text"] = df["review_text"].astype(str)
+
+    # IMPORTANT: LIMIT REVIEWS PER GAME
+    df = df.groupby(["app_id", "app_name"]).head(max_reviews_per_game)
 
     grouped = (
         df.groupby(["app_id", "app_name"])["review_text"]
-          .apply(lambda x: " ||| ".join(x.dropna().astype(str)))
+          .apply(lambda x: " ||| ".join(x.astype(str)))
           .reset_index()
-          .rename(columns={"review_text": "combined_reviews"})
     )
 
-    grouped["clean_text"] = grouped["combined_reviews"].apply(clean_text)
+    grouped["clean_text"] = grouped["review_text"].apply(clean_text)
     return grouped
