@@ -32,7 +32,7 @@ def train(train_df: pd.DataFrame, valid_df: pd.DataFrame):
     model = ABSAModel()
     model = model.cuda()
 
-    optimizer = AdamW(model.parameters(), lr=config.LR)
+    optimizer = AdamW(model.parameters(), lr=float(config.LR))
 
     for epoch in range(config.EPOCHS):
         model.train()
