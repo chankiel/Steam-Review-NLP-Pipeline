@@ -2,6 +2,14 @@ model:
   name: bert-base-uncased
   max_len: 128
 
+model_alt_1:
+  name: roberta-base
+  max_len: 128
+
+model_alt_2:
+  name: microsoft/deberta-v3-base
+  max_len: 128
+
 training:
   batch_size_train: 16
   batch_size_valid: 16
