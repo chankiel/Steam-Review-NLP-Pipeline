@@ -13,5 +13,12 @@ tqdm
 pinecone
 psycopg2-binary
 python-dotenv 
+transformers>=4.40.0
+datasets
+evaluate
+peft
 accelerate
+sentencepiece
+rouge-score
+absl-py
 huggingface_hub
