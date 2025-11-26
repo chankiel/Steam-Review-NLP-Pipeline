@@ -1,3 +1,0 @@
-model_path_absa: "models/best/model_absa.pt"
-model_name_absa: "bert-base-uncased"
-max_len: 

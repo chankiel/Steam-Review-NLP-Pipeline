@@ -12,7 +12,7 @@ class Config:
     def __init__(self, yaml_path=None):
         # Default path relative to project root
         if yaml_path is None:
-            yaml_path = Path(__file__).parent.parent.parent / "configs" / "train_absa.yaml"
+            yaml_path = Path(__file__).parent.parent.parent / "configs" / "absa.yaml"
         
         cfg = load_yaml(yaml_path)
 
