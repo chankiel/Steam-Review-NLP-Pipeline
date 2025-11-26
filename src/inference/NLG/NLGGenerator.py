@@ -22,44 +22,34 @@ class NLGGenerator:
     # --------------------------------------------------
     # Build Prompt (ABSA supports both scores & labels)
     # --------------------------------------------------
-    def build_prompt(self, user_aspects, game_aspects, similar_games):
+    def build_prompt(self, user_aspects, top_games):
         """
-        user_aspects = numeric preferences from UI (0–1)
-        game_aspects = ABSA output (can be numeric OR 'positive/negative/neutral')
-        similar_games = list of cosine similarity matches
+        user_aspects = numeric preferences from UI (-1 to 1)
+        top_games = list of top 5 games with their ABSA scores
         """
         prompt = f"""
-You are an AI assistant that generates personalized game recommendations.
-Use:
-- The user's aspect preferences
-- The ABSA sentiment scores (positive/negative/neutral or numeric 0–1)
-- The computed similar-game list
-
-===================
-USER ASPECT PRIORITIES
-===================
-{json.dumps(user_aspects, indent=2)}
-
-===================
-GAME ASPECT SENTIMENT (ABSA)
-===================
-{json.dumps(game_aspects, indent=2)}
-
-===================
-TOP SIMILAR GAMES (Cosine Similarity)
-===================
-{json.dumps(similar_games, indent=2)}
-
-===================
-TASK
-===================
-Write a personalized recommendation explaining:
-1. Why this game matches the user's preferences.
-2. Which aspects align well.
-3. Which aspects might not align perfectly.
-4. Keep the tone natural and conversational.
-5. Final answer must be ONE medium-length paragraph.
-"""
+    You are an AI assistant that generates personalized game recommendations.
+    
+    ===================
+    USER ASPECT PREFERENCES
+    ===================
+    {json.dumps(user_aspects, indent=2)}
+    
+    ===================
+    TOP 5 RECOMMENDED GAMES (sorted by aspect match)
+    ===================
+    {json.dumps(top_games, indent=2)}
+    
+    ===================
+    TASK
+    ===================
+    Write a personalized recommendation explaining:
+    1. Recommend the TOP game from the list as the best match
+    2. Explain why it matches the user's preferences based on aspect alignment
+    3. Briefly mention 1-2 alternative games from the list if the user wants variety
+    4. Keep the tone natural and conversational
+    5. Final answer must be ONE medium-length paragraph
+    """
         return prompt.strip()
 
     # --------------------------------------------------
