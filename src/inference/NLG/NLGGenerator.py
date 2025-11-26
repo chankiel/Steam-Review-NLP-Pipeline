@@ -25,27 +25,33 @@ class NLGGenerator:
     def build_prompt(self, user_aspects, top_games):
         """
         user_aspects = numeric preferences from UI (-1 to 1)
-        top_games = list of top 5 games with their ABSA scores
+        top_games = list of top 5 games with their ABSA scores and combined scores
         """
         prompt = f"""
     You are an AI assistant that generates personalized game recommendations.
-    
+
     ===================
     USER ASPECT PREFERENCES
     ===================
     {json.dumps(user_aspects, indent=2)}
-    
+
     ===================
-    TOP 5 RECOMMENDED GAMES (sorted by aspect match)
+    TOP 5 RECOMMENDED GAMES (sorted by combined score - highest first)
     ===================
+    The games below are ranked by a combined score of:
+    - 10% semantic similarity (how well the game's reviews match your description)
+    - 90% aspect similarity (how well the game's aspects align with your preferences)
+
+    Index 1 is the BEST match, Index 2 is second best, and so on.
+
     {json.dumps(top_games, indent=2)}
-    
+
     ===================
     TASK
     ===================
     Write a personalized recommendation explaining:
-    1. Recommend the TOP game from the list as the best match
-    2. Explain why it matches the user's preferences based on aspect alignment
+    1. Recommend the TOP game (Index 1) from the list as the best match
+    2. Explain why it matches the user's preferences based on aspect alignment and combined score
     3. Briefly mention 1-2 alternative games from the list if the user wants variety
     4. Keep the tone natural and conversational
     5. Final answer must be ONE medium-length paragraph
