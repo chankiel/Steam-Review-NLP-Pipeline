@@ -28,13 +28,13 @@ def multi_aspect_loss(logits, labels):
 
 def train(train_df: pd.DataFrame, valid_df: pd.DataFrame):
     train_loader = DataLoader(
-    ABSADataset(train_df),
-    batch_size=config.TRAIN_BATCH_SIZE,
-    shuffle=True
+        ABSADataset(train_df),
+        batch_size=config.TRAIN_BATCH_SIZE,
+        shuffle=True
     )
     valid_loader = DataLoader(
-    ABSADataset(valid_df),
-    batch_size=config.VALID_BATCH_SIZE
+        ABSADataset(valid_df),
+        batch_size=config.VALID_BATCH_SIZE
     )
 
     model = ABSAModel().to(device)
