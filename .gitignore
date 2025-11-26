@@ -2,3 +2,4 @@ venv/
 dataset/
 data/
 *.env
+*.csv
